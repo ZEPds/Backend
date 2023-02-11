@@ -36,7 +36,7 @@ const httpServer = app.listen(PORT, () => {
 
 mongoose.set('strictQuery', false)
 mongoose.connect(
-	'mongodb+srv://franco:Fran.1234@integrador.4nnapkt.mongodb.net/?retryWrites=true&w=majority',
+	'mongodb+srv://NicFran:Fran1234@cluster0.mz9jpt5.mongodb.net/test',
 
 	(error) => {
 		if (error) {
