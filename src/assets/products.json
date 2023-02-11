@@ -1,0 +1,48 @@
+{
+	"products": [
+		{
+			"id": 0,
+			"title": "Pera",
+			"description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+			"price": 10000,
+			"status": true,
+			"thumbnail": [],
+			"stock": 20,
+			"category": "Frutas",
+			"code": "1122933"
+		},
+		{
+			"id": 1,
+			"title": "Lomo",
+			"description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
+			"price": 10000,
+			"status": true,
+			"thumbnail": [],
+			"stock": 20,
+			"category": "Carne",
+			"code": "13"
+		},
+		{
+			"id": 2,
+			"title": "Naranja",
+			"description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
+			"price": 5000,
+			"status": true,
+			"thumbnail": [],
+			"stock": 20,
+			"category": "Frutas",
+			"code": "1452351"
+		},
+		{
+			"id": 3,
+			"title": "Coca",
+			"description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
+			"price": 5000,
+			"status": true,
+			"thumbnail": [],
+			"stock": 20,
+			"category": "Bebidas",
+			"code": "241241"
+		}
+	]
+}

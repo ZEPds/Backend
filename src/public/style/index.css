@@ -1,0 +1,10 @@
+body {
+	background-color: rgb(248, 206, 143);
+	padding: 10px;
+}
+
+#list-products {
+	display: flex;
+	align-items: stretch;
+	gap: 10px;
+}
