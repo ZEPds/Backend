@@ -1,39 +1,36 @@
-const ChatManager = require('../dao/mongoManager/ChatManager')
+const ChatsManagerMongo = require('../dao/mongoManager/chatsManagerMongo')
 const { edmitAddMessage } = require('../utils/socket.io')
 
-const cm = new ChatManager()
-
-const sendMessage = async (req, res) => {
-	const message = req.body
-
-	const messageSaved = await cm.sendMessage(message)
-
-	if (!messageSaved) {
-		res.status(400).json({
-			msg: 'Error al enviar el mensaje',
-			ok: false,
-		})
-	}
-
-	edmitAddMessage(message)
-
-	return res.status(201).json(message)
+const getAllMessages = async (req, res) => {
+  try {
+    const messages = await ChatsManagerMongo.getMessages()
+    return res.json({
+      msg: 'OK',
+      payload: messages,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: 'Error al intentar obtener los mensajes',
+    })
+  }
 }
 
-const getMessages = async (req, res) => {
-	const messages = await cm.getMessages()
-
-	if (!messages) {
-		res.status(404).json({
-			msg: 'Not found',
-			ok: false,
-		})
-	}
-
-	return res.status(200).json(messages)
+const addNewMessage = async (req, res) => {
+  try {
+    const newMessage = req.body
+    const messageAdded = await ChatsManagerMongo.addMessage(newMessage)
+    edmitAddMessage(messageAdded)
+    return res.json({
+      msg: 'OK',
+      payload: messageAdded,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: 'Error al intentar agregar el mensaje',
+    })
+  }
 }
 
-module.exports = {
-	getMessages,
-	sendMessage,
-}
+module.exports = { getAllMessages, addNewMessage }

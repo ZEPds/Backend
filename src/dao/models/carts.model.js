@@ -1,29 +1,25 @@
 const mongoose = require('mongoose')
 
-const cartsSchema = new mongoose.Schema([
-	{
-		priceTotal: {
-			type: Number,
-			default: 0,
-		},
-		quantityTotal: {
-			type: Number,
-			default: 0,
-		},
-		products: [
-			{
-				_id: false,
-				id: String,
-				description: String,
-				qanttity: {
-					type: Number,
-					default: 1,
-				},
-			},
-		],
-	},
-])
+const cartsCollection = 'Carts'
 
-const cartsModel = mongoose.model('carts', cartsSchema)
+const cartsSchema = new mongoose.Schema({
+  products: {
+    type: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'products',
+        },
+        quantity: Number,
+        unitValue: Number
+      },
+    ],
+    default: [],
+  },
+  totalPrice: Number,
+  totalQuantity: Number
+})
 
-module.exports = cartsModel
+const CartsModel = mongoose.model(cartsCollection, cartsSchema)
+
+module.exports = CartsModel

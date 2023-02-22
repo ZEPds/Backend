@@ -1,15 +1,18 @@
 const mongoose = require('mongoose')
 
-const messageSchema = new mongoose.Schema({
-	username: {
-		type: String,
-		require: true,
-	},
-	message: {
-		type: String,
-		require: true,
-	},
-})
-const chatModel = mongoose.model('messages', messageSchema)
+const messagesCollection = 'messages'
 
-module.exports = chatModel
+const messagesSchema = new mongoose.Schema({
+  user: {
+    type: String,
+    required: true,
+  },
+  message: {
+    required: true,
+    type: String,
+  },
+})
+
+const MessagesModel = mongoose.model(messagesCollection, messagesSchema)
+
+module.exports = MessagesModel

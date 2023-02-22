@@ -1,16 +1,12 @@
 const socket = io()
+const chatsList = document.getElementById('chats-list')
 
-const listChatsElement = document.getElementById('list-chats')
-
-socket.on('init-chats', ({ chats }) => {
-	console.log(chats)
-	chats.forEach((chat) => {
-		listChatsElement.innerHTML += `
-		<li>${chat.username} - ${chat.message}</li>
-		`
-	})
+socket.on('init-chats', ({ messages }) => {
+  messages.forEach((message) => {
+    chatsList.innerHTML += `<li>${message.user} - ${message.message}</li>`
+  })
 })
 
 socket.on('add-message', (newMessage) => {
-	listChatsElement.innerHTML += `<li>${newMessage.username} - ${newMessage.message}</li>`
+  chatsList.innerHTML += `<li>${newMessage.username} - ${newMessage.message}</li>`
 })

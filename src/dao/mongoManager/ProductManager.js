@@ -1,30 +1,28 @@
-const productModel = require('../models/products.model')
+const ProductsModel = require('../models/products.model')
 
-class ProductManager {
-	constructor() {
-		this.products = []
-	}
+class ProductManagerMongo {
+  addProduct = async (product) => {
+    return await ProductsModel.create(product)
+    
+  }
 
-	addProduct = async (product) => {
-		try {
-			const productSaved = await productModel.create(product)
-			return productSaved
-		} catch (e) {
-			console.log(e)
-		}
-	}
+  getProducts = async (page = 1, limit = 10, sort = '', query = {}) => {
+    return await ProductsModel.paginate(query, { page, limit, sort: { price: `${sort}` } })
+  }
 
-	getProducts = async (limit) => {
-		try {
-			const products = await productModel.find().limit(limit)
-			return products
-		} catch (error) {
-			return res.status(500).json({
-				msg: 'error',
-				playload: 'Error al Mostrar Producto',
-			})
-		}
-	}
+  getById = async (id) => {
+    return await ProductsModel.findById(id)
+  }
+
+  updateProduct = async (id, newProduct) => {
+    return await ProductsModel.updateOne({ _id: id }, newProduct)
+    
+  }
+
+  deleteProduct = async (id) => {
+    return await ProductsModel.deleteOne({ _id: id })
+    
+  }
 }
 
-module.exports = ProductManager
+module.exports = new ProductManagerMongo()

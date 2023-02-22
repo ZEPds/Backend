@@ -1,31 +1,43 @@
 const socket = require('socket.io')
-const ProductManager = require('../dao/mongoManager/ProductManager')
-const ChatManager = require('../dao/mongoManager/ChatManager')
+const ChatsManagerMongo = require('../dao/mongoManager/chatsManagerMongo')
+const ProductManagerMongo = require('../dao/mongoManager/productManagerMongo')
 
-const productManager = new ProductManager()
-const chatManager = new ChatManager()
 
 let io
 
 const connectSocket = (httpServer) => {
-	io = socket(httpServer)
-	io.on('connection', async (socket) => {
-		console.log('Nuevo cliente conectado!')
-		const products = await productManager.getProducts()
-		const chats = await chatManager.getMessages()
-		socket.emit('init-products', { products })
-		socket.emit('init-chats', { chats })
-	})
+  io = socket(httpServer)
+
+  io.on('connection', async (socket) => {
+    console.log('Nuevo cliente conectado!')
+
+    const products = await ProductManagerMongo.getProducts()
+    const messages = await ChatsManagerMongo.getMessages()
+    socket.emit('init-products', { products })
+    socket.emit('init-chats', { messages })
+  })
 }
 
-const emitAddProduct = (newProduct) => {
-	console.log(`Se ha agregado el producto: ${JSON.stringify(newProduct)}`)
-	io.emit('add-product', newProduct)
+const emitDeleteProduct = (id) => {
+  io.emit('delete-product', id)
 }
 
-const edmitAddMessage = (newMessage) => {
-	console.log(`Se ha enviado un nuevo mensaje: ${JSON.stringify(newMessage)}`)
-	io.emit('add-message', newMessage)
+const emitAddProduct = (product) => {
+  io.emit('add-product', product)
 }
 
-module.exports = { connectSocket, emitAddProduct, edmitAddMessage }
+const emitUpdateProduct = (product) => {
+  io.emit('update-product', product)
+}
+
+const edmitAddMessage = (message) => {
+  io.emit('add-message', message)
+}
+
+module.exports = {
+  connectSocket,
+  emitDeleteProduct,
+  emitAddProduct,
+  emitUpdateProduct,
+  edmitAddMessage,
+}

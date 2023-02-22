@@ -1,51 +1,49 @@
+require('dotenv').config()
 const express = require('express')
 const cartsRouter = require('./routes/carts.router')
 const productRouter = require('./routes/products.router')
+const viewsRouter = require('./routes/views.router')
 const chatsRouter = require('./routes/chats.router')
 const handlebars = require('express-handlebars')
-const viewsRouter = require('./routes/views.router')
-const app = express()
 const { connectSocket } = require('./utils/socket.io')
-const { default: mongoose } = require('mongoose')
+const mongoose = require('mongoose')
 const PORT = 8080
+const server = express()
 
-//handlebars
-app.engine('handlebars', handlebars.engine())
-app.set('views', __dirname + '/views')
-app.set('view engine', 'handlebars')
+//Express
+server.use(express.json())
+server.use(express.urlencoded({ extended: true }))
 
-//express
-app.use(express.static(__dirname + '/public'))
-app.use(express.json())
-app.use(
-	express.urlencoded({
-		extended: true,
-	})
-)
+//Handlebars
+server.engine('handlebars', handlebars.engine())
+server.set('views', __dirname + '/views')
+server.set('view engine', 'handlebars')
+server.use(express.static(__dirname + '/public'))
 
-//rutas
-app.use('/api/products', productRouter)
-app.use('/api/chats', chatsRouter)
-app.use('/api/carts', cartsRouter)
-app.use('/', viewsRouter)
+//Routes
+server.use('/api/products', productRouter)
+server.use('/api/carts', cartsRouter)
+server.use('/api/chats', chatsRouter)
+server.use('/', viewsRouter)
 
-//socket.io
-const httpServer = app.listen(PORT, () => {
-	console.log(`Servidor ejecutado en puerto ${PORT}`)
+//Socket io
+const httpServer = server.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`)
 })
 
+connectSocket(httpServer)
+
+//Mongoose
 mongoose.set('strictQuery', false)
 mongoose.connect(
-	'mongodb+srv://NicFran:Fran1234@cluster0.mz9jpt5.mongodb.net/test',
-
-	(error) => {
-		if (error) {
-			console.log('error de conexion', error)
-			process.exit()
-		} else {
-			console.log('Conexion exitosa')
-		}
-	}
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/?retryWrites=true&w=majority`,
+  (error) => {
+    if (error) {
+      console.log(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/?retryWrites=true&w=majority`)
+      console.log('Error de conexión. ', error)
+      process.exit()
+    } else {
+      console.log('Conexión con base de datos exitosa')
+    }
+  }
 )
-
-connectSocket(httpServer)

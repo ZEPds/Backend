@@ -1,26 +1,13 @@
-const chatModel = require('../models/messages.model')
+const MessagesModel = require('../models/messages.model')
 
-class ChatManager {
-	sendMessage = async (message) => {
-		try {
-			const messageSaved = await chatModel.create(message)
-			return messageSaved
-		} catch (e) {
-			console.log(e)
-		}
-	}
+class ChatsManagerMongo {
+  getMessages = async () => {
+    return await MessagesModel.find()
+  }
 
-	getMessages = async () => {
-		try {
-			const messages = await chatModel.find()
-			return messages
-		} catch (error) {
-			return res.status(500).json({
-				msg: 'error',
-				playload: 'Error al buscar los mensajes',
-			})
-		}
-	}
+  addMessage = async (newMessage) => {
+    return await MessagesModel.create(newMessage)
+  }
 }
 
-module.exports = ChatManager
+module.exports = new ChatsManagerMongo()

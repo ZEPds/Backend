@@ -1,7 +1,12 @@
 <div>
-    <h1> LISTA DE PRODUCTOS: </h1>
+  <h1>Lista de Productos</h1>
+  <ul>
+    {{#each products}}
+      <li>
+        <p>{{this.title}}</p>
+        <p>{{this.price}}</p>
+        <img src={{this.thumbnail}} alt={{this.title}} />
+      </li>
+    {{/each}}
+  </ul>
 </div>
-<main id="list-products">
-</main>
-<script src="/socket.io/socket.io.js"></script>
-<script src="js/index.js"></script>

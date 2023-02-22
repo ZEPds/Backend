@@ -1,44 +1,107 @@
-const ProductManager = require('../dao/mongoManager/ProductManager')
-const { emitAddProduct } = require('../utils/socket.io')
-
-const pm = new ProductManager()
-
-const addProduct = async (req, res) => {
-	const product = req.body
-
-	const productSaved = await pm.addProduct(product)
-
-	if (!productSaved) {
-		res.status(400).json({
-			msg: 'Error al crear el producto',
-			ok: false,
-		})
-	}
-	
-	emitAddProduct(productSaved)
-
-	return res.status(200).json({
-		msg: 'Producto creado exitosamente',
-		ok: true,
-	})
-}
+const ProductManagerMongo = require('../dao/mongoManager/productManagerMongo')
+const {
+  emitDeleteProduct,
+  emitAddProduct,
+  emitUpdateProduct,
+} = require('../utils/socket.io')
 
 const getProducts = async (req, res) => {
-	const { limit = 10 } = req.query
+  try {
+    const { page, limit, sort, ...query } = req.query
+    const products = await ProductManagerMongo.getProducts(page, limit, sort, query)
+    return res.json({
+      status: 'Sucess',
+      payload: products,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'Error',
+      payload: 'Error al intentar obtener los productos',
+    })
+  }
+}
 
-	const products = await pm.getProducts({ limit })
+const getProductById = async (req, res) => {
+  try {
+    const pid = req.params.pid
+    const productFound = await ProductManagerMongo.getProductById(pid)
+    return res.json({
+      msg: 'OK',
+      payload: productFound,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: error.message,
+    })
+  }
+}
 
-	if (!products) {
-		res.status(404).json({
-			msg: 'Not found',
-			ok: false,
-		})
-	}
+const addProduct = async (req, res) => {
+  try {
+    const product = req.body
+    const productAdded = await ProductManagerMongo.addProduct(product)
+    emitAddProduct(productAdded)
 
-	return res.render('home', { products })
+    return res.json({
+      msg: 'OK',
+      payload: productAdded,
+    })
+    // }
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: error.message,
+    })
+  }
+}
+
+const updateProduct = async (req, res) => {
+  try {
+    const pid = req.params.pid
+    const product = req.body
+    await productMangerMongo.updateProduct(pid, product)
+    emitUpdateProduct(product)
+    return res.json({
+      msg: 'OK',
+      payload: `Product updated successfully`,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: error.message,
+    })
+  }
+}
+
+const deleteProduct = async (req, res) => {
+  try {
+    const pid = req.params.pid
+    const deleted = await productMangerMongo.deleteProduct(pid)
+    emitDeleteProduct(pid)
+    if (deleted) {
+      return res.json({
+        msg: 'OK',
+        payload: 'Product sucessfully deleted',
+      })
+    } else {
+      return res.status(404).json({
+        msg: 'Error',
+        payload: `ID ${pid} was not found on the products collection`,
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error',
+      payload: error.message,
+    })
+  }
 }
 
 module.exports = {
-	getProducts,
-	addProduct,
+  getProducts,
+  getProductById,
+  addProduct,
+  updateProduct,
+  deleteProduct,
 }

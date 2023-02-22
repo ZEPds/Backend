@@ -1,43 +1,16 @@
 const { Router } = require('express')
-const productManager = require('../dao/fileSystemManager/ProductManager')
-const cartManager = require('../dao/fileSystemManager/CartsManager')
+const cartsController = require('../controllers/carts.controller')
+
 const router = Router()
 
-router.post('/', async (req, res) => {
-	const resp = await cartManager.addCart()
-	res.json({ msg: 'Carrito creado con exito', id: resp })
-})
+router.post('/', cartsController.createCart)
 
-router.get('/:cid', async (req, res) => {
-	const cid = req.params.cid
-	try {
-		const cart = await cartManager.getCart(cid)
-		res.json({
-			msg: 'Carrito encontrado',
-			cart,
-		})
-	} catch (error) {
-		res.status(404).json({
-			msg: 'No se encuentra el carrito',
-			error: error.message,
-		})
-	}
-})
+router.get('/:cid', cartsController.getCart)
 
-router.post('/:cid/product/:pid', async (req, res) => {
-	const { cid, pid } = req.params
-	try {
-		const product = await productManager.getProductById(pid)
-		const cart = await cartManager.addProductToCart(cid, product.id)
-		res.json({
-			msg: 'Producto agregado exitosamente',
-		})
-	} catch (error) {
-		res.status(404).json({
-			msg: 'Error al agregar producto',
-			error: error.message,
-		})
-	}
-})
+router.delete('/:cid/product/:pid', cartsController.deleteProduct)
+
+router.put('/:cid', cartsController.updateAllProducts)
+
+router.put('/:cid/product/:pid', cartsController.updateProductQuantity)
 
 module.exports = router
